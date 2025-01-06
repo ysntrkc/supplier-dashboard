@@ -8,16 +8,16 @@ import fs from 'fs';
 import yaml from 'yaml';
 
 import Routes from './api/routes/index.js';
-import LogHelper from './helpers/log.helper.js';
-import { connectServer } from './config/db.js';
+import LogHelper from './helpers/LogHelper.js';
+import {connectServer} from './config/db.js';
 
 const app = express();
 const server = http.createServer(app);
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-app.use(cors({ optionsSuccessStatus: 200, origin: true, credentials: true }));
+app.use(cors({optionsSuccessStatus: 200, origin: true, credentials: true}));
 app.options('*', cors());
 
 const port = process.env.PORT || 8000;
@@ -30,23 +30,20 @@ app.use('/api-docs', swagger.serve, swagger.setup(swaggerDocument));
 
 const originalSend = app.response.send;
 app.response.send = function sendOverride(body) {
-  this.__custombody__ = body;
-  return originalSend.call(this, body);
+	this.__custombody__ = body;
+	return originalSend.call(this, body);
 };
 
 app.use(LogHelper.logWithMorgan());
 
 app.use('/api', Routes);
 
-app.get('/health', async (_req, res) => {
-  return res.json({
-    type: true,
-    message: 'Deployment is running!',
-  });
+app.get('/api/health', async (_req, res) => {
+	return res.json({type: 'success', message: 'Server is running'});
 });
 
 server.listen(port, () => {
-  console.log(`SERVER LISTENING ON ${port}`);
+	console.log(`Server is running on port ${port}`);
 });
 
 export default server;
