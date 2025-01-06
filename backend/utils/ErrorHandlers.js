@@ -1,4 +1,4 @@
-import ENUMS from '../enums';
+import ENUMS from '../enums/index.js';
 
 class GlobalHandler extends Error {
 

@@ -1,9 +1,7 @@
-import HttpStatuses from './HttpStatusesEnum';
-import ResponseType from './ResponseTypeEnum';
-import ExceptionTypes from './ExceptionTypesEnum';
+import HttpStatuses from './HttpStatusesEnum.js';
+import ExceptionTypes from './ExceptionTypesEnum.js';
 
 export default {
-  ResponseType,
-  ExceptionTypes,
-  HttpStatuses,
+	ExceptionTypes,
+	HttpStatuses,
 };

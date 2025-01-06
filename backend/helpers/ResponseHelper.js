@@ -1,13 +1,9 @@
-import ENUMS from '../src/enums';
+import ENUMS from '../enums/index.js';
 
 class ResponseHelper {
 
 	static success(res, message, data, statusCode = ENUMS.HttpStatuses.OK) {
-		return res.status(statusCode).json({
-			type: 'success',
-			message,
-			data,
-		});
+		return res.status(statusCode).json({type: 'success', message, data});
 	}
 
 	static error(res, error) {
@@ -18,10 +14,7 @@ class ResponseHelper {
 			console.log('error --> ', errorMessageOnly ? error.message : error);
 		}
 
-		return res.status(returnedResponseCode).json({
-			type: 'error',
-			message: error.message,
-		});
+		return res.status(returnedResponseCode).json({type: 'error', message: error.message});
 	}
 
 }
