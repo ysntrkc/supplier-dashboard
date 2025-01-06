@@ -8,16 +8,16 @@ const basename = fileURLToPath(import.meta.url)
   .split('/')
   .pop();
 
-export const initModels = async (db) => {
+export const initModels = async (mongoose) => {
   const files = fs
     .readdirSync(__dirname)
-    .filter((file) => !file.startsWith('.') && file !== basename && file.endsWith('.js'));
+    .filter((file) => !file.startsWith('.') && file !== basename && file.endsWith('.model.js'));
 
   for (const file of files) {
     const filename = file.split('.')[0];
-    const model = await import(`${__dirname}/${file}`);
-    db.model(filename, model.default);
+    const { default: schema } = await import(`${__dirname}/${file}`);
+    mongoose.model(filename, schema);
   }
 
-  return db;
+  return mongoose;
 };
