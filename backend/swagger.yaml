@@ -1,0 +1,12 @@
+openapi: 3.1.0
+info:
+  description: API for managing applications within the egaranti platform
+  version: 1.0.0
+  title: egaranti Application API
+servers:
+  - url: http://127.0.0.1:5959
+    description: Local server
+  - url: https://127.0.0.1:5959
+    description: Secure local server
+paths:
+components:
