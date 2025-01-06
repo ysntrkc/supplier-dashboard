@@ -8,7 +8,7 @@ import fs from 'fs';
 import yaml from 'yaml';
 
 import Routes from './api/routes/index.js';
-import LogHelper from './helpers/LogHelper.js';
+import LogHelper from './helpers/log.helper.js';
 import { connectServer } from './config/db.js';
 
 const app = express();
