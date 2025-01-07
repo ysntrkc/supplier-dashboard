@@ -1,12 +1,177 @@
 openapi: 3.1.0
 info:
-  description: API for managing applications within the egaranti platform
+  description: API for supplier dashboard management
   version: 1.0.0
-  title: egaranti Application API
+  title: Supplier Dashboard API
 servers:
-  - url: http://127.0.0.1:5959
+  - url: http://127.0.0.1:8000
     description: Local server
-  - url: https://127.0.0.1:5959
+  - url: https://127.0.0.1:8000
     description: Secure local server
+
 paths:
+  /api/health:
+    get:
+      summary: Health check endpoint
+      responses:
+        200:
+          description: Server status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Server is running
+
+  /api/vendor:
+    get:
+      summary: Get all vendors
+      responses:
+        200:
+          description: List of vendors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Vendors found
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Vendor"
+
+  /api/dashboard/monthly/{vendor_id}:
+    get:
+      summary: Get monthly sales for a vendor
+      parameters:
+        - name: vendor_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/id"
+      responses:
+        200:
+          description: Monthly sales data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Monthly sales fetched successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/MonthlySales"
+        400:
+          description: Invalid vendor ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Vendor not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/dashboard/product/{vendor_id}:
+    get:
+      summary: Get all sales grouped by product for a vendor
+      parameters:
+        - name: vendor_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/id"
+      responses:
+        200:
+          description: Sales data grouped by product
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Sales grouped by product fetched successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProductSales"
+        400:
+          description: Invalid vendor ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Vendor not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
+  schemas:
+    id:
+      type: string
+      pattern: "^[0-9a-fA-F]{24}$"
+
+    Vendor:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          example: "Vendor Name"
+
+    MonthlySales:
+      type: object
+      properties:
+        label:
+          type: string
+          example: "2023-12"
+        value:
+          type: number
+          example: 150
+
+    ProductSales:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Product Name"
+        total:
+          type: number
+          example: 100
+
+    Error:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "error"
+        message:
+          type: string
+          example: "Error message"
