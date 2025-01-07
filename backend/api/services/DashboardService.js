@@ -49,6 +49,50 @@ class DashboardService {
 		return {message: 'Monthly sales fetched successfully', data: sales};
 	}
 
+	static async getAllSalesGroupByProduct(params) {
+		const {vendor_id: vendorId} = params;
+
+		const vendor = await db('vendors').findById(vendorId);
+		if (!vendor) {
+			throw new ExceptionHandler(ENUMS.ExceptionTypes.NOT_FOUND, 'Vendor not found');
+		}
+
+		const sales = await db('orders').aggregate([
+			{$unwind: '$cart_item'},
+			{
+				$lookup: {
+					from: 'parent_products',
+					localField: 'cart_item.product',
+					foreignField: '_id',
+					as: 'product',
+				},
+			},
+			{$unwind: '$product'},
+			{$match: {'product.vendor': vendor._id}},
+			{
+				$addFields: {
+					total_sell_count: {$multiply: [ '$cart_item.item_count', '$cart_item.quantity' ]},
+				},
+			},
+			{
+				$group: {
+					_id: '$product._id',
+					name: {$first: '$product.name'},
+					total: {$sum: '$total_sell_count'},
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					name: 1,
+					total: 1,
+				},
+			},
+		]);
+
+		return {message: 'Sales grouped by product fetched successfully', data: sales};
+	}
+
 }
 
 export default DashboardService;
