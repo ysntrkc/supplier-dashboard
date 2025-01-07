@@ -10,7 +10,8 @@ import {
   PointElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 } from 'chart.js';
 import { useReactTable, getCoreRowModel, getSortedRowModel, createColumnHelper, flexRender } from '@tanstack/react-table';
 import axios from 'axios';
@@ -23,7 +24,8 @@ ChartJS.register(
   PointElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -34,9 +36,8 @@ function App() {
   const [chartData, setChartData] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [error, setError] = useState(null);
-  const [chartType, setChartType] = useState('bar'); // Add this new state
+  const [chartType, setChartType] = useState('bar');
 
-  // Fetch vendors on component mount
   useEffect(() => {
     const fetchVendors = async () => {
       try {
@@ -53,7 +54,6 @@ function App() {
     fetchVendors();
   }, []);
 
-  // Fetch chart and table data when vendor is selected
   useEffect(() => {
     const fetchData = async () => {
       if (!selectedVendor) {
@@ -63,7 +63,6 @@ function App() {
       }
 
       try {
-        // Fetch monthly sales data
         const monthlySalesResponse = await axios.get(
           `${backendUrl}/api/dashboard/monthly/${selectedVendor.value}`
         );
@@ -86,8 +85,8 @@ function App() {
                 backgroundColor: 'rgba(75, 192, 192, 0.6)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
-                tension: 0.1, // Makes the line smoother
-                fill: true,   // Fill area under the line
+                tension: 0.1,
+                fill: true,
                 pointRadius: 4,
                 pointHoverRadius: 6,
                 pointBackgroundColor: 'rgba(75, 192, 192, 1)',
@@ -96,7 +95,6 @@ function App() {
           }
         }
 
-        // Fetch product sales data
         const productSalesResponse = await axios.get(
           `${backendUrl}/api/dashboard/product/${selectedVendor.value}`
         );
@@ -141,9 +139,15 @@ function App() {
   const columnHelper = createColumnHelper();
   const columns = useMemo(
     () => [
+			columnHelper.accessor('code', {
+				header: 'Product Code',
+			}),
       columnHelper.accessor('name', {
         header: 'Product Name',
       }),
+			columnHelper.accessor('color', {
+				header: 'Color',
+			}),
       columnHelper.accessor('total', {
         header: 'Total Sales',
       }),
@@ -167,6 +171,7 @@ function App() {
           onChange={handleChange}
           placeholder="Search vendors..."
           isSearchable
+					isClearable
           className="text-sm"
           theme={(theme) => ({
             ...theme,
@@ -248,7 +253,7 @@ function App() {
                                     ? header.column.getIsSorted() === 'asc'
                                       ? '↑'
                                       : '↓'
-                                    : '↕'}
+                                    : ''}
                                 </span>
                               )}
                             </div>

@@ -57,7 +57,7 @@ class DashboardService {
 			throw new ExceptionHandler(ENUMS.ExceptionTypes.NOT_FOUND, 'Vendor not found');
 		}
 
-		const sales = await db('orders').aggregate([
+		const products = await db('orders').aggregate([
 			{$unwind: '$cart_item'},
 			{
 				$lookup: {
@@ -90,7 +90,14 @@ class DashboardService {
 			},
 		]);
 
-		return {message: 'Sales grouped by product fetched successfully', data: sales};
+		for (const product of products) {
+			const [ code, name, color = '-' ] = product.name.split('-').map(item => item.trim());
+			product.code = code;
+			product.name = name;
+			product.color = color;
+		}
+
+		return {message: 'Sales grouped by product fetched successfully', data: products};
 	}
 
 }

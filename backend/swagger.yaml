@@ -159,9 +159,15 @@ components:
     ProductSales:
       type: object
       properties:
+        code:
+          type: string
+          example: "123456"
         name:
           type: string
           example: "Product Name"
+        color:
+          type: string
+          example: "Red"
         total:
           type: number
           example: 100
