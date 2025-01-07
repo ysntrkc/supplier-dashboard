@@ -1,7 +1,7 @@
 import db from '../../config/db.js';
 
 import ENUMS from '../../enums/index.js';
-import ExceptionHandler from '../../utils/ErrorHandlers.js';
+import ExceptionHandler from '../../utils/ExceptionHandler.js';
 
 class DashboardService {
 
@@ -24,14 +24,24 @@ class DashboardService {
 			},
 			{$unwind: '$product'},
 			{$match: {'product.vendor': vendor._id}},
-			{$addFields: {total_sell_count: {$multiply: [ '$cart_item.item_count', '$cart_item.quantity' ]}}},
+			{
+				$addFields: {
+					total_sell_count: {$multiply: [ '$cart_item.item_count', '$cart_item.quantity' ]},
+					year_month: {$dateToString: {format: '%Y-%m', date: '$payment_at'}},
+				},
+			},
 			{
 				$group: {
-					_id: {
-						month: {$month: '$payment_at'},
-						year: {$year: '$payment_at'},
-					},
+					_id: '$year_month',
 					total: {$sum: '$total_sell_count'},
+				},
+			},
+			{$sort: {_id: 1}},
+			{
+				$project: {
+					_id: 0,
+					label: '$_id',
+					value: '$total',
 				},
 			},
 		]);

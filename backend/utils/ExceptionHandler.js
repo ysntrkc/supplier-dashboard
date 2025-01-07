@@ -11,88 +11,99 @@ class GlobalHandler extends Error {
 
 class OkHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.OK) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.OK;
 	}
 
 }
 
 class CreatedHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.CREATED) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.CREATED;
 	}
 
 }
 
 class NoContentHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.NO_CONTENT) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.NO_CONTENT;
 	}
 
 }
 
 class BadRequestHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.BAD_REQUEST) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.BAD_REQUEST;
 	}
 
 }
 
 class UnauthorizedHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.UNAUTHORIZED) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.UNAUTHORIZED;
 	}
 
 }
 
 class ForbiddenHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.FORBIDDEN) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.FORBIDDEN;
 	}
 
 }
 
 class NotFoundHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.NOT_FOUND) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.NOT_FOUND;
 	}
 
 }
 
 class ConflictHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.CONFLICT) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.CONFLICT;
 	}
 
 }
 
 class GoneHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.GONE) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.GONE;
 	}
 
 }
 
 class InternalServerHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.INTERNAL_SERVER) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.INTERNAL_SERVER;
 	}
 
 }
 
 class BadGatewayHandler extends GlobalHandler {
 
-	constructor(message, statusCode = ENUMS.HttpStatuses.BAD_GATEWAY) {
-		super(message, statusCode);
+	constructor(message) {
+		super(message);
+		this.statusCode = ENUMS.HttpStatuses.BAD_GATEWAY;
 	}
 
 }
