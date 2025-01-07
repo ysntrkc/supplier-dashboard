@@ -1,0 +1,13 @@
+# Ignore files
+*.env
+
+# lock files
+*package-lock.json
+*yarn.lock
+*pnpm-lock.yaml
+
+# Node artifact files
+*node_modules/
+
+# VS Code settings
+*.vscode/
