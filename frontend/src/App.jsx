@@ -13,7 +13,7 @@ import {
   Legend,
   Filler
 } from 'chart.js';
-import { useReactTable, getCoreRowModel, getSortedRowModel, createColumnHelper, flexRender } from '@tanstack/react-table';
+import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel, createColumnHelper, flexRender } from '@tanstack/react-table';
 import axios from 'axios';
 import { useDarkMode } from './DarkModeContext.jsx';
 
@@ -41,6 +41,8 @@ function App() {
   const [chartType, setChartType] = useState('bar');
   const [isChartLoading, setIsChartLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
+  const [pageIndex, setPageIndex] = useState(0);
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -66,14 +68,14 @@ function App() {
           datasets: [{
             label: 'Monthly Sales',
             data: [],
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: isDarkMode ? 'rgba(59, 130, 246, 0.6)' : 'rgba(75, 192, 192, 0.6)',
+            borderColor: isDarkMode ? 'rgba(59, 130, 246, 1)' : 'rgba(75, 192, 192, 1)',
             borderWidth: 1,
             tension: 0.1,
             fill: true,
             pointRadius: 4,
             pointHoverRadius: 6,
-            pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+            pointBackgroundColor: isDarkMode ? 'rgba(59, 130, 246, 1)' : 'rgba(75, 192, 192, 1)',
           }],
         });
         setTableData([]);
@@ -84,28 +86,29 @@ function App() {
       setIsTableLoading(true);
 
       try {
-        const monthlySalesResponse = await axios.get(
-          `${backendUrl}/api/dashboard/monthly/${selectedVendor.value}`
-        );
+        const [monthlySalesResponse, productSalesResponse] = await Promise.all([
+          axios.get(`${backendUrl}/api/dashboard/monthly/${selectedVendor.value}`),
+          axios.get(`${backendUrl}/api/dashboard/product/${selectedVendor.value}`)
+        ]);
 
+        // Handle monthly sales data
         if (monthlySalesResponse.data.type === 'success') {
           const sales = monthlySalesResponse.data.data;
           
-          // Set empty chart data if no sales
           if (sales.length === 0) {
             setChartData({
               labels: [],
               datasets: [{
                 label: 'Monthly Sales',
                 data: [],
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: isDarkMode ? 'rgba(59, 130, 246, 0.6)' : 'rgba(75, 192, 192, 0.6)',
+                borderColor: isDarkMode ? 'rgba(59, 130, 246, 1)' : 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
                 tension: 0.1,
                 fill: true,
                 pointRadius: 4,
                 pointHoverRadius: 6,
-                pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                pointBackgroundColor: isDarkMode ? 'rgba(59, 130, 246, 1)' : 'rgba(75, 192, 192, 1)',
               }],
             });
           } else {
@@ -120,27 +123,25 @@ function App() {
               datasets: [{
                 label: 'Monthly Sales',
                 data: data,
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: isDarkMode ? 'rgba(59, 130, 246, 0.6)' : 'rgba(75, 192, 192, 0.6)',
+                borderColor: isDarkMode ? 'rgba(59, 130, 246, 1)' : 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
                 tension: 0.1,
                 fill: true,
                 pointRadius: 4,
                 pointHoverRadius: 6,
-                pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                pointBackgroundColor: isDarkMode ? 'rgba(59, 130, 246, 1)' : 'rgba(75, 192, 192, 1)',
               }],
             });
           }
         }
-        setIsChartLoading(false);
 
-        const productSalesResponse = await axios.get(
-          `${backendUrl}/api/dashboard/product/${selectedVendor.value}`
-        );
-
+        // Handle product sales data
         if (productSalesResponse.data.type === 'success') {
           setTableData(productSalesResponse.data.data);
         }
+
+        setIsChartLoading(false);
         setIsTableLoading(false);
 
       } catch (err) {
@@ -152,7 +153,7 @@ function App() {
     };
 
     fetchData();
-  }, [selectedVendor]);
+  }, [selectedVendor, isDarkMode]);
 
   const options = vendors.map(vendor => ({
     value: vendor._id,
@@ -202,7 +203,54 @@ function App() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      pagination: {
+        pageSize,
+        pageIndex,
+      },
+    },
+    onPaginationChange: updater => {
+      if (typeof updater === 'function') {
+        const newState = updater({ pageIndex, pageSize });
+        setPageIndex(newState.pageIndex);
+        setPageSize(newState.pageSize);
+      } else {
+        setPageIndex(updater.pageIndex);
+        setPageSize(updater.pageSize);
+      }
+    },
   });
+
+  const chartOptions = {
+    scales: {
+      x: {
+        ticks: {
+          color: isDarkMode ? '#F3F4F6' : '#374151'
+        },
+        grid: {
+          color: isDarkMode ? '#4B5563' : '#E5E7EB',
+          lineWidth: isDarkMode ? 0.5 : 1
+        }
+      },
+      y: {
+        ticks: {
+          color: isDarkMode ? '#F3F4F6' : '#374151'
+        },
+        grid: {
+          color: isDarkMode ? '#4B5563' : '#E5E7EB',
+          lineWidth: isDarkMode ? 0.5 : 1
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        labels: {
+          color: isDarkMode ? '#F3F4F6' : '#374151'
+        }
+      }
+    }
+  };
 
   return (
     <div className={`app-container ${isDarkMode ? 'dark' : 'light'}`}>
@@ -298,7 +346,9 @@ function App() {
                 No sales data available
               </div>
             ) : (
-              chartType === 'bar' ? <Bar data={chartData} /> : <Line data={chartData} />
+              chartType === 'bar' ? 
+                <Bar data={chartData} options={chartOptions} /> : 
+                <Line data={chartData} options={chartOptions} />
             )}
           </div>
         </div>
@@ -367,6 +417,40 @@ function App() {
                   ))}
                 </tbody>
               </table>
+              <div className={`pagination ${isDarkMode ? 'dark' : 'light'}`}>
+                <button
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                  className={`pagination-button ${isDarkMode ? 'dark' : 'light'}`}
+                >
+                  Previous
+                </button>
+                <span className={`pagination-info ${isDarkMode ? 'dark' : 'light'}`}>
+                  Page {table.getState().pagination.pageIndex + 1} of{' '}
+                  {table.getPageCount()}
+                </span>
+                <button
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                  className={`pagination-button ${isDarkMode ? 'dark' : 'light'}`}
+                >
+                  Next
+                </button>
+                <select
+                  value={pageSize}
+                  onChange={e => {
+                    setPageSize(Number(e.target.value))
+                    setPageIndex(0)
+                  }}
+                  className={`page-size-select ${isDarkMode ? 'dark' : 'light'}`}
+                >
+                  {[10, 25, 50, 100].map(size => (
+                    <option key={size} value={size}>
+                      Show {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
         </div>
