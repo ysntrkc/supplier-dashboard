@@ -7,7 +7,11 @@
 *pnpm-lock.yaml
 
 # Node artifact files
-*node_modules/
+*/node_modules/
+
+# Build files
+*/dist/
+*/build/
 
 # VS Code settings
-*.vscode/
+*/.vscode/

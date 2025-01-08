@@ -15,7 +15,7 @@ import {
 } from 'chart.js';
 import { useReactTable, getCoreRowModel, getSortedRowModel, createColumnHelper, flexRender } from '@tanstack/react-table';
 import axios from 'axios';
-import { useDarkMode } from './DarkModeContext';
+import { useDarkMode } from './DarkModeContext.jsx';
 
 ChartJS.register(
   CategoryScale,

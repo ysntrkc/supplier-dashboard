@@ -18,8 +18,7 @@ export default [
         ecmaFeatures: {
           jsx: true
         }
-      },
-      jsx: true
+      }
     },
     plugins: {
       react: reactPlugin,
