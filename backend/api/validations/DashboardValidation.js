@@ -20,6 +20,21 @@ class DashboardValidation {
 		}
 	}
 
+	static getMonthlySalesOfProduct(object) {
+		const schema = Joi.object({
+			vendor_id: Joi.string().hex().length(24).required(),
+			product_id: Joi.string().hex().length(24).required(),
+		});
+
+		const {error} = schema.validate(object);
+		if (error) {
+			throw new ExceptionHandler(
+				ENUMS.ExceptionTypes.BAD_REQUEST,
+				error.details[0].message,
+			);
+		}
+	}
+
 	static getAllSalesGroupByProduct(object) {
 		const schema = Joi.object({
 			vendor_id: Joi.string().hex().length(24).required(),

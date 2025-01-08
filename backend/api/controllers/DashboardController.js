@@ -19,6 +19,20 @@ class DashboardController {
 		}
 	}
 
+	static async getMonthlySalesOfProduct(req, res) {
+		try {
+			const {params} = req;
+
+			DashboardValidation.getMonthlySalesOfProduct(params);
+
+			const response = await DashboardService.getMonthlySalesOfProduct(params);
+			ResponseHelper.success(res, response.message, response.data);
+		}
+		catch (error) {
+			ResponseHelper.error(res, error);
+		}
+	}
+
 	static async getAllSalesGroupByProduct(req, res) {
 		try {
 			const {params, query} = req;

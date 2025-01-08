@@ -49,6 +49,56 @@ class DashboardService {
 		return {message: 'Monthly sales fetched successfully', data: sales};
 	}
 
+	static async getMonthlySalesOfProduct(params) {
+		const {vendor_id: vendorId, product_id: productId} = params;
+		const vendor = await db('vendors').findById(vendorId);
+		if (!vendor) {
+			throw new ExceptionHandler(ENUMS.ExceptionTypes.NOT_FOUND, 'Vendor not found');
+		}
+
+		const product = await db('parent_products').findById(productId);
+		if (!product) {
+			throw new ExceptionHandler(ENUMS.ExceptionTypes.NOT_FOUND, 'Product not found');
+		}
+
+		const sales = await db('orders').aggregate([
+			{$unwind: '$cart_item'},
+			{$match: {'cart_item.product': product._id}},
+			{
+				$lookup: {
+					from: 'parent_products',
+					localField: 'cart_item.product',
+					foreignField: '_id',
+					as: 'product',
+				},
+			},
+			{$unwind: '$product'},
+			{$match: {'product.vendor': vendor._id}},
+			{
+				$addFields: {
+					total_sell_count: {$multiply: [ '$cart_item.item_count', '$cart_item.quantity' ]},
+					year_month: {$dateToString: {format: '%Y-%m', date: '$payment_at'}},
+				},
+			},
+			{
+				$group: {
+					_id: '$year_month',
+					total: {$sum: '$total_sell_count'},
+				},
+			},
+			{$sort: {_id: 1}},
+			{
+				$project: {
+					_id: 0,
+					label: '$_id',
+					value: '$total',
+				},
+			},
+		]);
+
+		return {message: 'Monthly sales of product fetched successfully', data: sales};
+	}
+
 	static async getAllSalesGroupByProduct(params) {
 		const {
 			vendor_id: vendorId,
@@ -111,7 +161,7 @@ class DashboardService {
 			},
 			{
 				$project: {
-					_id: 0,
+					_id: 1,
 					code: 1,
 					name: 1,
 					color: 1,
