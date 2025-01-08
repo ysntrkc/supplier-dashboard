@@ -11,6 +11,7 @@ Node.js backend API for the Supplier Dashboard application.
 - Morgan for logging
 - Joi for validation
 - CORS enabled
+- Express Status Monitor
 
 ## Prerequisites
 
