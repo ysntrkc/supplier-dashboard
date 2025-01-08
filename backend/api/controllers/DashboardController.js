@@ -21,11 +21,12 @@ class DashboardController {
 
 	static async getAllSalesGroupByProduct(req, res) {
 		try {
-			const {params} = req;
+			const {params, query} = req;
+			const validationParams = {...params, ...query};
 
-			DashboardValidation.getAllSalesGroupByProduct(params);
+			DashboardValidation.getAllSalesGroupByProduct(validationParams);
 
-			const response = await DashboardService.getAllSalesGroupByProduct(params);
+			const response = await DashboardService.getAllSalesGroupByProduct(validationParams);
 			ResponseHelper.success(res, response.message, response.data);
 		}
 		catch (error) {

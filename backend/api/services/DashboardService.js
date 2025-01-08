@@ -50,14 +50,22 @@ class DashboardService {
 	}
 
 	static async getAllSalesGroupByProduct(params) {
-		const {vendor_id: vendorId} = params;
+		const {
+			vendor_id: vendorId,
+			page,
+			limit,
+			sort_by: sortBy = 'total',
+			sort_order: sortOrder = 'desc',
+		} = params;
 
 		const vendor = await db('vendors').findById(vendorId);
 		if (!vendor) {
 			throw new ExceptionHandler(ENUMS.ExceptionTypes.NOT_FOUND, 'Vendor not found');
 		}
 
-		const products = await db('orders').aggregate([
+		const sortStage = {[sortBy]: sortOrder === 'desc' ? -1 : 1};
+
+		const commonAggregates = [
 			{$unwind: '$cart_item'},
 			{
 				$lookup: {
@@ -69,6 +77,10 @@ class DashboardService {
 			},
 			{$unwind: '$product'},
 			{$match: {'product.vendor': vendor._id}},
+		];
+
+		const aggregationPipeline = [
+			...commonAggregates,
 			{
 				$addFields: {
 					total_sell_count: {$multiply: [ '$cart_item.item_count', '$cart_item.quantity' ]},
@@ -81,23 +93,64 @@ class DashboardService {
 					total: {$sum: '$total_sell_count'},
 				},
 			},
+			{$addFields: {splitted_name: {$split: [ '$name', '-' ]}}},
+			{
+				$addFields: {
+					code: {$trim: {input: {$arrayElemAt: [ '$splitted_name', 0 ]}}},
+					name: {$trim: {input: {$arrayElemAt: [ '$splitted_name', 1 ]}}},
+					color: {$trim: {input: {$ifNull: [ {$arrayElemAt: [ '$splitted_name', 2 ]}, '-' ]}}},
+				},
+			},
 			{
 				$project: {
 					_id: 0,
+					code: 1,
 					name: 1,
+					color: 1,
 					total: 1,
 				},
 			},
-		]);
+			{$sort: sortStage},
+		];
 
-		for (const product of products) {
-			const [ code, name, color = '-' ] = product.name.split('-').map(item => item.trim());
-			product.code = code;
-			product.name = name;
-			product.color = color;
+		if (page && limit) {
+			const skip = (page - 1) * (+limit);
+			aggregationPipeline.push(
+				{$skip: skip},
+				{$limit: +limit},
+			);
 		}
 
-		return {message: 'Sales grouped by product fetched successfully', data: products};
+		const products = await db('orders').aggregate(aggregationPipeline);
+
+		const response = {
+			message: 'Sales grouped by product fetched successfully',
+			data: {products},
+		};
+
+		if (page && limit) {
+			const totalCount = await db('orders').aggregate([
+				...commonAggregates,
+				{
+					$group: {
+						_id: '$product._id',
+					},
+				},
+				{$count: 'total'},
+			]).then(result => (result[0]?.total || 0));
+
+			response.data = {
+				products,
+				pagination: {
+					total: totalCount,
+					page: parseInt(page),
+					limit: parseInt(limit || 10),
+					total_pages: Math.ceil(totalCount / (limit || 10)),
+				},
+			};
+		}
+
+		return response;
 	}
 
 }

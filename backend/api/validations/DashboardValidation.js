@@ -23,6 +23,10 @@ class DashboardValidation {
 	static getAllSalesGroupByProduct(object) {
 		const schema = Joi.object({
 			vendor_id: Joi.string().hex().length(24).required(),
+			page: Joi.number().min(1).optional(),
+			limit: Joi.number().min(1).max(100).optional(),
+			sort_by: Joi.string().valid('total', 'code', 'name', 'color').default('total'),
+			sort_order: Joi.string().valid('asc', 'desc').default('desc'),
 		});
 
 		const {error} = schema.validate(object);
