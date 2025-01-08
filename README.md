@@ -41,7 +41,7 @@ lonca-supplier-dashboard/
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/lonca-supplier-dashboard.git
+git clone https://github.com/ysntrkc/lonca-supplier-dashboard.git
 cd lonca-supplier-dashboard
 ```
 
