@@ -1,6 +1,6 @@
-# Supplier Dashboard
+# Lonca Supplier Dashboard
 
-A full-stack web application for managing supplier sales data with interactive charts and tables.
+A full-stack web application for suppliers to monitor their sales data and analyze product-wise sales trends.
 
 ## Project Structure
 
@@ -10,14 +10,32 @@ lonca-supplier-dashboard/
 └── backend/         # Node.js backend API
 ```
 
-## Features
+## Key Features
 
-- Interactive sales dashboard with charts and tables
-- Dark/light theme support
-- Monthly sales visualization
-- Product-wise sales breakdown
-- Real-time data filtering
+- Monthly sales trends visualization
+- Product-wise sales analysis
+- Advanced filtering and sorting options
+- Secure API endpoints with validation
+- Request logging and monitoring
+- Pagination support for large datasets
+- Search functionality for products
+- Real-time monitoring dashboard
+
+## Technologies Used
+
+### Backend
+- Node.js with Express
+- MongoDB with Mongoose
+- Morgan for logging
+- Joi for validation
+- Swagger for API documentation
+- Express Status Monitor
+
+### Frontend
+- React 
+- TailwindCSS
 - Responsive design
+- Dark/light theme support
 
 ## Getting Started
 
@@ -51,6 +69,6 @@ See the README in each directory for detailed setup instructions.
 
 Backend API documentation is available at `http://localhost:8000/api-docs` when running in development mode.
 
-## License
+## Status Monitor
 
-MIT License
+The Express Status Monitor is available at `http://localhost:8000/status` when running in development mode.
