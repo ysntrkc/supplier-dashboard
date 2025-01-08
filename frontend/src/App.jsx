@@ -44,6 +44,8 @@ function App() {
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
   const [sorting, setSorting] = useState({ sort_by: '', sort_order: '' });
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -72,6 +74,7 @@ function App() {
           limit: pageSize,
           ...(sorting.sort_by && { sort_by: sorting.sort_by }),
           ...(sorting.sort_order && { sort_order: sorting.sort_order }),
+          ...(search && { search }),
         }
       });
 
@@ -167,7 +170,7 @@ function App() {
 
   useEffect(() => {
     fetchTableData();
-  }, [selectedVendor, pageIndex, pageSize, sorting]);
+  }, [selectedVendor, pageIndex, pageSize, sorting, search]);
 
   const options = vendors.map(vendor => ({
     value: vendor._id,
@@ -191,6 +194,19 @@ function App() {
   const handleChange = (selectedOption) => {
     setError(null);
     setSelectedVendor(selectedOption);
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      setSearch(searchInput);
+      setPageIndex(0);
+    }
+  };
+
+  const handleSearchClick = () => {
+    setSearch(searchInput);
+    setPageIndex(0);
   };
 
   const columnHelper = createColumnHelper();
@@ -317,9 +333,9 @@ function App() {
               primary50: isDarkMode ? '#4B5563' : '#DBEAFE',
               neutral0: isDarkMode ? '#1F2937' : 'white',
               neutral80: isDarkMode ? '#F3F4F6' : '#1F2937',
-              neutral50: isDarkMode ? '#9CA3AF' : '#6B7280', // placeholder text
-              neutral30: isDarkMode ? '#6B7280' : '#D1D5DB', // border color
-              neutral20: isDarkMode ? '#4B5563' : '#E5E7EB', // border color (unfocused)
+              neutral50: isDarkMode ? '#9CA3AF' : '#6B7280',
+              neutral30: isDarkMode ? '#6B7280' : '#D1D5DB',
+              neutral20: isDarkMode ? '#4B5563' : '#E5E7EB',
             },
           })}
           styles={{
@@ -392,7 +408,25 @@ function App() {
 
       {selectedVendor && (
         <div className={`table-container ${isDarkMode ? 'dark' : 'light'}`}>
-          <h3 className={`table-title ${isDarkMode ? 'dark' : 'light'}`}>Product Sales</h3>
+          <div className="table-header-section">
+            <h3 className={`table-title ${isDarkMode ? 'dark' : 'light'}`}>Product Sales</h3>
+            <div className="search-container">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                className={`search-input ${isDarkMode ? 'dark' : 'light'}`}
+              />
+              <button
+                onClick={handleSearchClick}
+                className={`search-button ${isDarkMode ? 'dark' : 'light'}`}
+              >
+                Search
+              </button>
+            </div>
+          </div>
           {isTableLoading ? (
             <div className="loading-spinner">
               <div className="spinner"></div>

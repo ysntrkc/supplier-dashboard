@@ -27,6 +27,7 @@ class DashboardValidation {
 			limit: Joi.number().min(1).max(100).optional(),
 			sort_by: Joi.string().valid('total', 'code', 'name', 'color').default('total'),
 			sort_order: Joi.string().valid('asc', 'desc').default('desc'),
+			search: Joi.string().optional(),
 		});
 
 		const {error} = schema.validate(object);

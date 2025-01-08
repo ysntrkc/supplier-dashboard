@@ -56,6 +56,7 @@ class DashboardService {
 			limit,
 			sort_by: sortBy = 'total',
 			sort_order: sortOrder = 'desc',
+			search,
 		} = params;
 
 		const vendor = await db('vendors').findById(vendorId);
@@ -64,6 +65,13 @@ class DashboardService {
 		}
 
 		const sortStage = {[sortBy]: sortOrder === 'desc' ? -1 : 1};
+
+		const matchStage = search ? {
+			$match: {
+				'product.name': {$regex: search, $options: 'i'},
+				'product.vendor': vendor._id,
+			},
+		} : {$match: {'product.vendor': vendor._id}};
 
 		const commonAggregates = [
 			{$unwind: '$cart_item'},
@@ -76,7 +84,7 @@ class DashboardService {
 				},
 			},
 			{$unwind: '$product'},
-			{$match: {'product.vendor': vendor._id}},
+			matchStage,
 		];
 
 		const aggregationPipeline = [
