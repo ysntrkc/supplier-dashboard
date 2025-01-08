@@ -36,13 +36,14 @@ function App() {
   const [vendors, setVendors] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [chartData, setChartData] = useState(null);
-  const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState({ products: [], pagination: null });
   const [error, setError] = useState(null);
   const [chartType, setChartType] = useState('bar');
   const [isChartLoading, setIsChartLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
+  const [sorting, setSorting] = useState({ sort_by: '', sort_order: '' });
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -60,8 +61,33 @@ function App() {
     fetchVendors();
   }, []);
 
+  const fetchTableData = async () => {
+    if (!selectedVendor) return;
+    
+    setIsTableLoading(true);
+    try {
+      const response = await axios.get(`${backendUrl}/api/dashboard/product/${selectedVendor.value}`, {
+        params: {
+          page: pageIndex + 1,
+          limit: pageSize,
+          ...(sorting.sort_by && { sort_by: sorting.sort_by }),
+          ...(sorting.sort_order && { sort_order: sorting.sort_order }),
+        }
+      });
+
+      if (response.data.type === 'success') {
+        setTableData(response.data.data);
+      }
+      setIsTableLoading(false);
+    } catch (err) {
+      setError('Failed to fetch table data');
+      console.error(err);
+      setIsTableLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchChartData = async () => {
       if (!selectedVendor) {
         setChartData({
           labels: [],
@@ -78,22 +104,15 @@ function App() {
             pointBackgroundColor: isDarkMode ? 'rgba(59, 130, 246, 1)' : 'rgba(75, 192, 192, 1)',
           }],
         });
-        setTableData([]);
         return;
       }
 
       setIsChartLoading(true);
-      setIsTableLoading(true);
-
       try {
-        const [monthlySalesResponse, productSalesResponse] = await Promise.all([
-          axios.get(`${backendUrl}/api/dashboard/monthly/${selectedVendor.value}`),
-          axios.get(`${backendUrl}/api/dashboard/product/${selectedVendor.value}`)
-        ]);
+        const response = await axios.get(`${backendUrl}/api/dashboard/monthly/${selectedVendor.value}`);
 
-        // Handle monthly sales data
-        if (monthlySalesResponse.data.type === 'success') {
-          const sales = monthlySalesResponse.data.data;
+        if (response.data.type === 'success') {
+          const sales = response.data.data;
           
           if (sales.length === 0) {
             setChartData({
@@ -135,25 +154,20 @@ function App() {
             });
           }
         }
-
-        // Handle product sales data
-        if (productSalesResponse.data.type === 'success') {
-          setTableData(productSalesResponse.data.data);
-        }
-
         setIsChartLoading(false);
-        setIsTableLoading(false);
-
       } catch (err) {
-        setError('Failed to fetch data');
+        setError('Failed to fetch chart data');
         console.error(err);
         setIsChartLoading(false);
-        setIsTableLoading(false);
       }
     };
 
-    fetchData();
+    fetchChartData();
   }, [selectedVendor, isDarkMode]);
+
+  useEffect(() => {
+    fetchTableData();
+  }, [selectedVendor, pageIndex, pageSize, sorting]);
 
   const options = vendors.map(vendor => ({
     value: vendor._id,
@@ -199,18 +213,40 @@ function App() {
   );
 
   const table = useReactTable({
-    data: tableData,
+    data: tableData.products,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
+    manualSorting: true,
+    pageCount: tableData.pagination?.total_pages ?? -1,
     state: {
       pagination: {
-        pageSize,
         pageIndex,
+        pageSize,
       },
+      sorting: sorting.sort_by ? [{ id: sorting.sort_by, desc: sorting.sort_order === 'desc' }] : [],
     },
-    onPaginationChange: updater => {
+    onSortingChange: (updater) => {
+      const currentSorting = sorting.sort_by ? [{ id: sorting.sort_by, desc: sorting.sort_order === 'desc' }] : [];
+      const newSorting = typeof updater === 'function' ? updater(currentSorting) : updater;
+
+      if (newSorting.length === 0) {
+        setSorting({ sort_by: '', sort_order: '' });
+      } else {
+        const [currentSort] = currentSorting;
+        const [newSort] = newSorting;
+
+        if (currentSort?.id === newSort.id && currentSort?.desc) {
+          setSorting({ sort_by: '', sort_order: '' });
+        } else {
+          setSorting({
+            sort_by: newSort.id,
+            sort_order: newSort.desc ? 'desc' : 'asc',
+          });
+        }
+      }
+    },
+    onPaginationChange: (updater) => {
       if (typeof updater === 'function') {
         const newState = updater({ pageIndex, pageSize });
         setPageIndex(newState.pageIndex);
@@ -361,7 +397,7 @@ function App() {
             <div className="loading-spinner">
               <div className="spinner"></div>
             </div>
-          ) : tableData.length === 0 ? (
+          ) : tableData.products.length === 0 ? (
             <div className="no-data">
               No product sales data available
             </div>
@@ -419,19 +455,23 @@ function App() {
               </table>
               <div className={`pagination ${isDarkMode ? 'dark' : 'light'}`}>
                 <button
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
+                  onClick={() => setPageIndex(old => Math.max(old - 1, 0))}
+                  disabled={pageIndex === 0}
                   className={`pagination-button ${isDarkMode ? 'dark' : 'light'}`}
                 >
                   Previous
                 </button>
                 <span className={`pagination-info ${isDarkMode ? 'dark' : 'light'}`}>
-                  Page {table.getState().pagination.pageIndex + 1} of{' '}
-                  {table.getPageCount()}
+                  Page {pageIndex + 1} of {tableData.pagination?.total_pages || 1}
+                  {tableData.pagination && (
+                    <> | Total: {tableData.pagination.total} items</>
+                  )}
                 </span>
                 <button
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
+                  onClick={() => setPageIndex(old => 
+                    tableData.pagination ? Math.min(old + 1, tableData.pagination.total_pages - 1) : old
+                  )}
+                  disabled={!tableData.pagination || pageIndex >= tableData.pagination.total_pages - 1}
                   className={`pagination-button ${isDarkMode ? 'dark' : 'light'}`}
                 >
                   Next
@@ -439,8 +479,8 @@ function App() {
                 <select
                   value={pageSize}
                   onChange={e => {
-                    setPageSize(Number(e.target.value))
-                    setPageIndex(0)
+                    setPageSize(Number(e.target.value));
+                    setPageIndex(0);
                   }}
                   className={`page-size-select ${isDarkMode ? 'dark' : 'light'}`}
                 >
