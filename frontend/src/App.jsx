@@ -205,13 +205,13 @@ function App() {
   });
 
   return (
-    <div className={`flex flex-col items-center justify-center min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'} p-6`}>
-      <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-8 rounded-xl shadow-lg w-full max-w-md mb-8 backdrop-blur-sm backdrop-filter`}>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Select a Vendor</h2>
+    <div className={`app-container ${isDarkMode ? 'dark' : 'light'}`}>
+      <div className={`vendor-section ${isDarkMode ? 'dark' : 'light'}`}>
+        <div className="vendor-header">
+          <h2 className={`section-title ${isDarkMode ? 'dark' : 'light'}`}>Select a Vendor</h2>
           <button
             onClick={toggleDarkMode}
-            className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700 text-yellow-400' : 'bg-gray-100 text-gray-600'}`}
+            className={`theme-toggle ${isDarkMode ? 'dark' : 'light'}`}
           >
             {isDarkMode ? '🌙' : '☀️'}
           </button>
@@ -254,16 +254,14 @@ function App() {
           }}
         />
 
-        {/* Update error message styles */}
         {error && (
-          <div className={`mt-4 p-3 ${isDarkMode ? 'bg-red-900/50 border-red-800 text-red-200' : 'bg-red-50 border-red-200 text-red-700'} rounded-lg border`}>
+          <div className={`error-message ${isDarkMode ? 'dark' : 'light'}`}>
             {error}
           </div>
         )}
 
-        {/* Update selected vendor styles */}
         {selectedVendor && (
-          <div className={`mt-4 p-3 ${isDarkMode ? 'bg-blue-900/50 border-blue-800 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800'} rounded-lg border`}>
+          <div className={`vendor-info ${isDarkMode ? 'dark' : 'light'}`}>
             <p>
               Selected Vendor ID: <span className="font-mono font-medium">{selectedVendor.value}</span>
             </p>
@@ -271,41 +269,32 @@ function App() {
         )}
       </div>
 
-      {/* Update chart container styles */}
       {selectedVendor && (
-        <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-xl shadow-lg w-full max-w-4xl mb-8`}>
-          <div className="flex justify-between items-center mb-6">
-            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Sales Overview</h3>
-            <div className={`inline-flex rounded-lg border ${isDarkMode ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-gray-50'} p-1`}>
+        <div className={`chart-container ${isDarkMode ? 'dark' : 'light'}`}>
+          <div className="chart-header">
+            <h3 className={`chart-title ${isDarkMode ? 'dark' : 'light'}`}>Sales Overview</h3>
+            <div className={`chart-controls ${isDarkMode ? 'dark' : 'light'}`}>
               <button
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                  chartType === 'bar'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={`chart-button ${chartType === 'bar' ? 'active' : ''} ${isDarkMode ? 'dark' : 'light'}`}
                 onClick={() => setChartType('bar')}
               >
                 Bar Chart
               </button>
               <button
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                  chartType === 'line'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={`chart-button ${chartType === 'line' ? 'active' : ''} ${isDarkMode ? 'dark' : 'light'}`}
                 onClick={() => setChartType('line')}
               >
                 Line Chart
               </button>
             </div>
           </div>
-          <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+          <div className={`chart-content ${isDarkMode ? 'dark' : 'light'}`}>
             {isChartLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <div className="loading-spinner">
+                <div className="spinner"></div>
               </div>
             ) : chartData?.datasets[0]?.data.length === 0 ? (
-              <div className="flex items-center justify-center h-64 text-gray-500">
+              <div className="no-data">
                 No sales data available
               </div>
             ) : (
@@ -316,36 +305,35 @@ function App() {
       )}
 
       {selectedVendor && (
-        <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-xl shadow-lg w-full max-w-4xl overflow-hidden`}>
-          <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'} mb-6`}>Product Sales</h3>
+        <div className={`table-container ${isDarkMode ? 'dark' : 'light'}`}>
+          <h3 className={`table-title ${isDarkMode ? 'dark' : 'light'}`}>Product Sales</h3>
           {isTableLoading ? (
-            <div className="flex items-center justify-center h-32">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="loading-spinner">
+              <div className="spinner"></div>
             </div>
           ) : tableData.length === 0 ? (
-            <div className="flex items-center justify-center h-32 text-gray-500">
+            <div className="no-data">
               No product sales data available
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className={`min-w-full divide-y ${isDarkMode ? 'divide-gray-700' : 'divide-gray-200'}`}>
-                <thead className={`${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+            <div className={`table-wrapper ${isDarkMode ? 'dark' : 'light'}`}>
+              <table className={`data-table ${isDarkMode ? 'dark' : 'light'}`}>
+                <thead className={`table-header ${isDarkMode ? 'dark' : 'light'}`}>
                   {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id}>
                       {headerGroup.headers.map(header => (
                         <th
                           key={header.id}
-                          className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors
-                            ${isDarkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                          className={`table-header-cell ${isDarkMode ? 'dark' : 'light'}`}
                           onClick={header.column.getToggleSortingHandler()}
                         >
                           {header.isPlaceholder
                             ? null
                             : (
-                              <div className="flex items-center space-x-1">
+                              <div className="header-content">
                                 {flexRender(header.column.columnDef.header, header.getContext())}
                                 {header.column.getCanSort() && (
-                                  <span className={isDarkMode ? 'text-gray-500' : 'text-gray-400'}>
+                                  <span className={`sort-indicator ${isDarkMode ? 'dark' : 'light'}`}>
                                     {header.column.getIsSorted()
                                       ? header.column.getIsSorted() === 'asc'
                                         ? '↑'
@@ -361,20 +349,16 @@ function App() {
                     </tr>
                   ))}
                 </thead>
-                <tbody className={`${isDarkMode ? 'bg-gray-800 divide-y divide-gray-700' : 'bg-white divide-y divide-gray-200'}`}>
+                <tbody className={`table-body ${isDarkMode ? 'dark' : 'light'}`}>
                   {table.getRowModel().rows.map(row => (
                     <tr 
                       key={row.id} 
-                      className={`transition-colors ${
-                        isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
-                      }`}
+                      className={`table-row ${isDarkMode ? 'dark' : 'light'}`}
                     >
                       {row.getVisibleCells().map(cell => (
                         <td 
                           key={cell.id} 
-                          className={`px-6 py-4 whitespace-nowrap text-sm ${
-                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                          }`}
+                          className={`table-cell ${isDarkMode ? 'dark' : 'light'}`}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>

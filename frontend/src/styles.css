@@ -1,0 +1,288 @@
+.app-container {
+  @apply flex flex-col items-center justify-center min-h-screen p-6;
+}
+
+.app-container.dark {
+  @apply bg-gray-900;
+}
+
+.app-container.light {
+  @apply bg-gradient-to-br from-gray-50 to-gray-100;
+}
+
+/* Vendor Section */
+.vendor-section {
+  @apply p-8 rounded-xl shadow-lg w-full max-w-md mb-8 backdrop-blur-sm backdrop-filter;
+}
+
+.vendor-section.dark {
+  @apply bg-gray-800;
+}
+
+.vendor-section.light {
+  @apply bg-white;
+}
+
+.vendor-header {
+  @apply flex justify-between items-center mb-6;
+}
+
+.section-title {
+  @apply text-3xl font-bold;
+}
+
+.section-title.dark {
+  @apply text-white;
+}
+
+.section-title.light {
+  @apply text-gray-800;
+}
+
+.theme-toggle {
+  @apply p-2 rounded-lg;
+}
+
+.theme-toggle.dark {
+  @apply bg-gray-700 text-yellow-400;
+}
+
+.theme-toggle.light {
+  @apply bg-gray-100 text-gray-600;
+}
+
+/* Messages */
+.error-message {
+  @apply mt-4 p-3 rounded-lg border;
+}
+
+.error-message.dark {
+  @apply bg-red-900/50 border-red-800 text-red-200;
+}
+
+.error-message.light {
+  @apply bg-red-50 border-red-200 text-red-700;
+}
+
+.vendor-info {
+  @apply mt-4 p-3 rounded-lg border;
+}
+
+.vendor-info.dark {
+  @apply bg-blue-900/50 border-blue-800 text-blue-200;
+}
+
+.vendor-info.light {
+  @apply bg-blue-50 border-blue-200 text-blue-800;
+}
+
+/* Chart Section */
+.chart-container {
+  @apply p-6 rounded-xl shadow-lg w-full max-w-4xl mb-8;
+}
+
+.chart-container.dark {
+  @apply bg-gray-800;
+}
+
+.chart-container.light {
+  @apply bg-white;
+}
+
+.chart-content {
+  @apply p-4 rounded-lg border mt-4;
+}
+
+.chart-content.dark {
+  @apply bg-gray-700 border-gray-600;
+}
+
+.chart-content.light {
+  @apply bg-white border-gray-300;
+}
+
+.chart-header {
+  @apply flex justify-between items-center;
+}
+
+.chart-title {
+  @apply text-xl font-semibold;
+}
+
+.chart-title.dark {
+  @apply text-gray-100;
+}
+
+.chart-title.light {
+  @apply text-gray-800;
+}
+
+.chart-controls {
+  @apply inline-flex rounded-lg border p-1;
+}
+
+.chart-controls.dark {
+  @apply border-gray-600 bg-gray-900;
+}
+
+.chart-controls.light {
+  @apply border-gray-300 bg-gray-200;
+}
+
+.chart-button {
+  @apply px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+}
+
+.chart-button.active.dark {
+  @apply bg-gray-700 text-gray-100 shadow-sm;
+}
+
+.chart-button.active.light {
+  @apply bg-white text-gray-800 shadow-sm;
+}
+
+.chart-button:not(.active).dark {
+  @apply text-gray-400 hover:text-gray-200 hover:bg-gray-800;
+}
+
+.chart-button:not(.active).light {
+  @apply text-gray-600 hover:text-gray-900 hover:bg-gray-100;
+}
+
+/* Loading and No Data States */
+.loading-spinner {
+  @apply flex items-center justify-center h-64;
+}
+
+.spinner {
+  @apply animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600;
+}
+
+.no-data {
+  @apply flex items-center justify-center h-32 text-gray-500;
+}
+
+/* Table Section */
+.table-container {
+  @apply p-6 rounded-xl shadow-lg w-full max-w-4xl mb-8;
+}
+
+.table-container.dark {
+  @apply bg-gray-800;
+}
+
+.table-container.light {
+  @apply bg-white;
+}
+
+.table-wrapper {
+  @apply overflow-x-auto rounded-lg mt-4 border;
+}
+
+.table-wrapper.dark {
+  @apply border-gray-600;
+}
+
+.table-wrapper.light {
+  @apply border-gray-300;
+}
+
+.data-table {
+  @apply min-w-full rounded-lg overflow-hidden;
+}
+
+.data-table.dark {
+  @apply border-gray-600 bg-gray-700;
+}
+
+.data-table.light {
+  @apply border-gray-300 bg-white;
+}
+
+.table-header {
+  @apply w-full;
+}
+
+.table-header.dark {
+  @apply bg-gray-900;
+}
+
+.table-header.light {
+  @apply bg-gray-200;
+}
+
+.table-header-cell {
+  @apply px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors border-b;
+}
+
+.table-header-cell.dark {
+  @apply text-gray-200 hover:bg-gray-800 border-gray-600;
+}
+
+.table-header-cell.light {
+  @apply text-gray-700 hover:bg-gray-300 border-gray-300;
+}
+
+.header-content {
+  @apply flex items-center space-x-1;
+}
+
+.sort-indicator {
+  @apply ml-1 text-sm;
+}
+
+.sort-indicator.dark {
+  @apply text-gray-400;
+}
+
+.sort-indicator.light {
+  @apply text-gray-600;
+}
+
+.table-body {
+  @apply divide-y;
+}
+
+.table-body.dark {
+  @apply divide-gray-600 bg-gray-700;
+}
+
+.table-body.light {
+  @apply divide-gray-200 bg-white;
+}
+
+.table-row {
+  @apply transition-colors;
+}
+
+.table-row.dark {
+  @apply hover:bg-gray-600;
+}
+
+.table-row.light {
+  @apply hover:bg-gray-100;
+}
+
+.table-cell {
+  @apply px-6 py-4 whitespace-nowrap text-sm;
+}
+
+.table-cell.dark {
+  @apply text-gray-100;
+}
+
+.table-cell.light {
+  @apply text-gray-800;
+}
+
+.table-title {
+  @apply text-xl font-semibold;
+}
+
+.table-title.dark {
+  @apply text-gray-100;
+}
+
+.table-title.light {
+  @apply text-gray-800;
+}

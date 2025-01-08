@@ -13,6 +13,10 @@ export default defineConfig({
     sourcemap: true,
     minify: 'terser',
   },
+	esbuild: {
+    jsxFactory: 'React.createElement',
+    jsxFragment: 'React.Fragment'
+  },
   define: {
     'process.env': {}
   }
