@@ -35,7 +35,6 @@ function App() {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [vendors, setVendors] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
-  const [chartData, setChartData] = useState(null);
   const [tableData, setTableData] = useState({ products: [], pagination: null });
   const [error, setError] = useState(null);
   const [chartType, setChartType] = useState('bar');
@@ -46,6 +45,30 @@ function App() {
   const [sorting, setSorting] = useState({ sort_by: '', sort_order: '' });
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isProductChartLoading, setIsProductChartLoading] = useState(false);
+  const [productChartType, setProductChartType] = useState('bar');
+
+  const defaultChartData = {
+    labels: [],
+    datasets: [{
+      label: 'No Data',
+      data: [],
+      backgroundColor: isDarkMode ? 'rgba(59, 130, 246, 0.6)' : 'rgba(75, 192, 192, 0.6)',
+      borderColor: isDarkMode ? 'rgba(59, 130, 246, 1)' : 'rgba(75, 192, 192, 1)',
+      borderWidth: 1,
+      tension: 0.1,
+      fill: true,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: isDarkMode ? 'rgba(59, 130, 246, 1)' : 'rgba(75, 192, 192, 1)',
+    }],
+  };
+
+  const [chartData, setChartData] = useState(defaultChartData);
+  const [productChartData, setProductChartData] = useState(defaultChartData);
+
+  const productChartRef = React.useRef(null);
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -172,6 +195,73 @@ function App() {
     fetchTableData();
   }, [selectedVendor, pageIndex, pageSize, sorting, search]);
 
+  useEffect(() => {
+    const fetchProductChartData = async () => {
+      if (!selectedVendor || !selectedProduct) {
+        setProductChartData(null);
+        return;
+      }
+
+      setIsProductChartLoading(true);
+      try {
+        const response = await axios.get(
+          `${backendUrl}/api/dashboard/monthly/${selectedVendor.value}/${selectedProduct._id}`
+        );
+
+        if (response.data.type === 'success') {
+          const sales = response.data.data;
+          
+          if (sales.length === 0) {
+            setProductChartData({
+              labels: [],
+              datasets: [{
+                label: 'Product Monthly Sales',
+                data: [],
+                backgroundColor: isDarkMode ? 'rgba(245, 158, 11, 0.6)' : 'rgba(249, 115, 22, 0.6)',
+                borderColor: isDarkMode ? 'rgba(245, 158, 11, 1)' : 'rgba(249, 115, 22, 1)',
+                borderWidth: 1,
+                tension: 0.1,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: isDarkMode ? 'rgba(245, 158, 11, 1)' : 'rgba(249, 115, 22, 1)',
+              }],
+            });
+          } else {
+            const firstMonth = sales[0].label;
+            const lastMonth = sales[sales.length - 1].label;
+            const allMonths = getMonthsBetween(firstMonth, lastMonth);
+            const salesMap = new Map(sales.map(item => [item.label, item.value]));
+            const data = allMonths.map(month => salesMap.get(month) || 0);
+
+            setProductChartData({
+              labels: allMonths,
+              datasets: [{
+                label: `Product ${selectedProduct.code} Monthly Sales`,
+                data: data,
+                backgroundColor: isDarkMode ? 'rgba(245, 158, 11, 0.6)' : 'rgba(249, 115, 22, 0.6)',
+                borderColor: isDarkMode ? 'rgba(245, 158, 11, 1)' : 'rgba(249, 115, 22, 1)',
+                borderWidth: 1,
+                tension: 0.1,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: isDarkMode ? 'rgba(245, 158, 11, 1)' : 'rgba(249, 115, 22, 1)',
+              }],
+            });
+          }
+        }
+        setIsProductChartLoading(false);
+      } catch (err) {
+        setError('Failed to fetch product chart data');
+        console.error(err);
+        setIsProductChartLoading(false);
+      }
+    };
+
+    fetchProductChartData();
+  }, [selectedProduct, selectedVendor, isDarkMode]);
+
   const options = vendors.map(vendor => ({
     value: vendor._id,
     label: vendor.name,
@@ -194,6 +284,8 @@ function App() {
   const handleChange = (selectedOption) => {
     setError(null);
     setSelectedVendor(selectedOption);
+    setSelectedProduct(null);
+    setProductChartData(defaultChartData);
   };
 
   const handleSearchKeyDown = (e) => {
@@ -212,6 +304,11 @@ function App() {
   const columnHelper = createColumnHelper();
   const columns = useMemo(
     () => [
+      columnHelper.accessor('_id', {
+        header: 'ID',
+        enableSorting: false,
+        cell: info => null,
+      }),
 			columnHelper.accessor('code', {
 				header: 'Product Code',
 			}),
@@ -274,6 +371,17 @@ function App() {
     },
   });
 
+  const handleRowClick = (row) => {
+    const rowData = row.original;
+    setSelectedProduct(selectedProduct?._id === rowData._id ? null : rowData);
+    
+    if (selectedProduct?._id !== rowData._id) {
+      setTimeout(() => {
+        productChartRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  };
+
   const chartOptions = {
     scales: {
       x: {
@@ -325,6 +433,16 @@ function App() {
       intersect: false,
       mode: 'index'
     }
+  };
+
+  const renderChart = (data, type = 'line') => {
+    if (!data || !data.datasets || !data.labels) {
+      return null;
+    }
+
+    return type === 'bar' ? 
+      <Bar data={data} options={chartOptions} /> : 
+      <Line data={data} options={chartOptions} />;
   };
 
   return (
@@ -421,9 +539,7 @@ function App() {
                 No sales data available
               </div>
             ) : (
-              chartType === 'bar' ? 
-                <Bar data={chartData} options={chartOptions} /> : 
-                <Line data={chartData} options={chartOptions} />
+              renderChart(chartData, chartType)
             )}
           </div>
         </div>
@@ -496,14 +612,18 @@ function App() {
                   {table.getRowModel().rows.map(row => (
                     <tr 
                       key={row.id} 
-                      className={`table-row ${isDarkMode ? 'dark' : 'light'}`}
+                      className={`table-row ${isDarkMode ? 'dark' : 'light'} ${
+                        selectedProduct?._id === row.original._id ? 'bg-opacity-50 ring-2 ring-blue-500' : ''
+                      }`}
+                      onClick={() => handleRowClick(row)}
+                      style={{ cursor: 'pointer' }}
                     >
                       {row.getVisibleCells().map(cell => (
                         <td 
                           key={cell.id} 
                           className={`table-cell ${isDarkMode ? 'dark' : 'light'}`}
                         >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          {cell.column.id !== '_id' && flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
                     </tr>
@@ -550,6 +670,46 @@ function App() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {selectedProduct && (
+        <div 
+          ref={productChartRef}
+          className={`chart-container ${isDarkMode ? 'dark' : 'light'}`}
+        >
+          <div className="chart-header">
+            <h4 className={`chart-title ${isDarkMode ? 'dark' : 'light'}`}>
+              Product Sales History - {selectedProduct.code} {selectedProduct.name}
+            </h4>
+            <div className={`chart-controls ${isDarkMode ? 'dark' : 'light'}`}>
+              <button
+                className={`chart-button ${productChartType === 'bar' ? 'active' : ''} ${isDarkMode ? 'dark' : 'light'}`}
+                onClick={() => setProductChartType('bar')}
+              >
+                Bar Chart
+              </button>
+              <button
+                className={`chart-button ${productChartType === 'line' ? 'active' : ''} ${isDarkMode ? 'dark' : 'light'}`}
+                onClick={() => setProductChartType('line')}
+              >
+                Line Chart
+              </button>
+            </div>
+          </div>
+          <div className={`chart-content ${isDarkMode ? 'dark' : 'light'}`}>
+            {isProductChartLoading ? (
+              <div className="loading-spinner">
+                <div className="spinner"></div>
+              </div>
+            ) : productChartData?.datasets[0]?.data.length === 0 ? (
+              <div className="no-data">
+                No sales data available for this product
+              </div>
+            ) : (
+              renderChart(productChartData, productChartType)
+            )}
+          </div>
         </div>
       )}
     </div>
