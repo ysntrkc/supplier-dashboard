@@ -46,6 +46,25 @@ DB_URI='mongodb://localhost:27017/supplier_dashboard'
 pnpm dev
 ```
 
+## Loading Sample Data (Optional)
+
+To test the application with sample data, you can import the provided JSON files into your MongoDB database:
+
+1. Make sure MongoDB is running locally
+2. Navigate to the `data` directory
+3. Import the sample data using mongoimport:
+
+```bash
+mongoimport --db supplier_dashboard --collection orders --jsonArray --file orders.json
+mongoimport --db supplier_dashboard --collection parent_products --jsonArray --file parent_products.json
+mongoimport --db supplier_dashboard --collection vendors --jsonArray --file vendors.json
+```
+
+After importing the data, you'll be able to:
+- View sample vendor data
+- See sales graphs and analytics
+- Test all API endpoints with realistic data
+
 ## API Routes
 
 - `GET /api/health` - Health check endpoint
