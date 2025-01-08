@@ -6,6 +6,7 @@ import http from 'http';
 import swagger from 'swagger-ui-express';
 import fs from 'fs';
 import yaml from 'yaml';
+import statusMonitor from 'express-status-monitor';
 
 import Routes from './api/routes/index.js';
 import LogHelper from './helpers/LogHelper.js';
@@ -13,6 +14,8 @@ import {connectServer} from './config/db.js';
 
 const app = express();
 const server = http.createServer(app);
+
+app.use(statusMonitor());
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());

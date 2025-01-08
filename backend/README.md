@@ -77,3 +77,13 @@ GET /api/dashboard/product/123?page=1&limit=10&sort_by=total&sort_order=desc&sea
 ## API Documentation
 
 Swagger UI documentation is available at `http://localhost:8000/api-docs` when running in development mode.
+
+## Status Monitoring
+
+The application includes real-time monitoring capabilities using express-status-monitor. You can access the monitoring dashboard at:
+
+```
+http://localhost:8000/status
+```
+
+The monitoring page automatically updates and provides historical data in charts.
