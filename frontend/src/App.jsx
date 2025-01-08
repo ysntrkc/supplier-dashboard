@@ -300,7 +300,30 @@ function App() {
         labels: {
           color: isDarkMode ? '#F3F4F6' : '#374151'
         }
+      },
+      tooltip: {
+        enabled: true,
+        mode: 'index',
+        intersect: false,
+        backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+        titleColor: isDarkMode ? '#F3F4F6' : '#1F2937',
+        bodyColor: isDarkMode ? '#F3F4F6' : '#1F2937',
+        borderColor: isDarkMode ? '#4B5563' : '#E5E7EB',
+        borderWidth: 1,
+        padding: 10,
+        callbacks: {
+          label: function(context) {
+            return `Sales: ${context.parsed.y}`;
+          },
+          title: function(context) {
+            return `Month: ${context[0].label}`;
+          }
+        }
       }
+    },
+    interaction: {
+      intersect: false,
+      mode: 'index'
     }
   };
 
