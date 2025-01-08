@@ -36,7 +36,7 @@ VITE_BACKEND_URL=http://localhost:8000
 
 4. Start the development server:
 ```bash
-npm run dev
+pnpm dev
 ```
 
 The application will be available at `http://localhost:5173`
@@ -56,11 +56,11 @@ The application will be available at `http://localhost:5173`
 
 ```
 src/
-├── App.jsx           # Main application component
+├── App.jsx              # Main application component
 ├── DarkModeContext.jsx  # Theme context
-├── main.jsx         # Application entry point
-├── index.css        # Base styles
-└── styles.css       # Component styles
+├── main.jsx             # Application entry point
+├── index.css            # Base styles
+└── styles.css           # Component styles
 ```
 
 ## Development Commands
