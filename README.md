@@ -1,11 +1,11 @@
-# Lonca Supplier Dashboard
+# Supplier Dashboard
 
 A full-stack web application for suppliers to monitor their sales data and analyze product-wise sales trends.
 
 ## Project Structure
 
 ```
-lonca-supplier-dashboard/
+supplier-dashboard/
 ├── frontend/         # React frontend application
 └── backend/         # Node.js backend API
 ```
@@ -41,8 +41,8 @@ lonca-supplier-dashboard/
 
 1. Clone the repository
 ```bash
-git clone https://github.com/ysntrkc/lonca-supplier-dashboard.git
-cd lonca-supplier-dashboard
+git clone https://github.com/ysntrkc/supplier-dashboard.git
+cd supplier-dashboard
 ```
 
 2. Set up the backend:
