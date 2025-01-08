@@ -50,7 +50,23 @@ pnpm dev
 - `GET /api/health` - Health check endpoint
 - `GET /api/vendor` - Get all vendors
 - `GET /api/dashboard/monthly/:vendor_id` - Get monthly sales for a vendor
+- `GET /api/dashboard/monthly/:vendor_id/:product_id` - Get monthly sales for a specific product
 - `GET /api/dashboard/product/:vendor_id` - Get product-wise sales for a vendor
+
+### Query Parameters for Product Sales
+
+The `/api/dashboard/product/:vendor_id` endpoint supports the following query parameters:
+
+- `page` (optional) - Page number for pagination (default: 1)
+- `limit` (optional) - Number of items per page (default: 10)
+- `sort_by` (optional) - Field to sort by (options: code, name, color, total)
+- `sort_order` (optional) - Sort direction (options: asc, desc)
+- `search` (optional) - Search term to filter products
+
+Example request:
+```
+GET /api/dashboard/product/123?page=1&limit=10&sort_by=total&sort_order=desc&search=blue
+```
 
 ## Development Commands
 

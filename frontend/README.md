@@ -44,13 +44,23 @@ The application will be available at `http://localhost:5173`
 ## Features
 
 - Responsive dashboard layout
-- Dark/light theme toggle
-- Interactive charts:
-  - Bar chart view
-  - Line chart view
-- Sortable data tables
-- Real-time data filtering
+- Dark/light theme toggle with persistent storage
+- Interactive vendor selection with search
+- Comprehensive sales analytics:
+  - Monthly sales overview
+  - Product-specific sales tracking
+  - Switchable chart views (Bar/Line)
+- Advanced data table functionality:
+  - Server-side pagination
+  - Custom page size selection
+  - Column sorting
+  - Real-time search filtering
+- Product details:
+  - Click-to-view detailed product charts
+  - Individual product sales history
 - Loading states and error handling
+- Smooth scrolling to selected product charts
+- Responsive design for all screen sizes
 
 ## Project Structure
 
