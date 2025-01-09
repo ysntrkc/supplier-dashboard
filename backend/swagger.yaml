@@ -8,6 +8,8 @@ servers:
     description: Local server
   - url: https://127.0.0.1:8000
     description: Secure local server
+  - url: https://supplier-dashboard-production.up.railway.app
+    description: Production server
 
 paths:
   /api/health:
