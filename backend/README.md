@@ -35,7 +35,6 @@ cp .env.example .env
 ```properties
 NODE_ENV=dev
 PORT=8000
-SWAGGER_URI=127.0.0.1:8000
 SHOW_ERRORS=true
 SHOW_ERROR_MESSAGE_ONLY=true
 DB_URI='mongodb://localhost:27017/supplier_dashboard'
