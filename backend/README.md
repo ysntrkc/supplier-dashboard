@@ -50,13 +50,12 @@ pnpm dev
 To test the application with sample data, you can import the provided JSON files into your MongoDB database:
 
 1. Make sure MongoDB is running locally
-2. Navigate to the `data` directory
-3. Import the sample data using mongoimport:
+2. Import the sample data using mongoimport:
 
 ```bash
-mongoimport --db supplier_dashboard --collection orders --jsonArray --file orders.json
-mongoimport --db supplier_dashboard --collection parent_products --jsonArray --file parent_products.json
-mongoimport --db supplier_dashboard --collection vendors --jsonArray --file vendors.json
+mongoimport --db supplier_dashboard --collection orders --jsonArray --file data/orders.json
+mongoimport --db supplier_dashboard --collection parent_products --jsonArray --file data/parent_products.json
+mongoimport --db supplier_dashboard --collection vendors --jsonArray --file data/vendors.json
 ```
 
 After importing the data, you'll be able to:
