@@ -8,11 +8,11 @@ servers:
     description: Local server
   - url: https://127.0.0.1:8000
     description: Secure local server
-  - url: https://supplier-dashboard-production.up.railway.app
+  - url: https://supplier-dashboard.duckdns.org
     description: Production server
 
 paths:
-  /api/health:
+  /health:
     get:
       summary: Health check endpoint
       responses:
@@ -30,7 +30,7 @@ paths:
                     type: string
                     example: Server is running
 
-  /api/vendor:
+  /vendor:
     get:
       summary: Get all vendors
       responses:
@@ -52,7 +52,7 @@ paths:
                     items:
                       $ref: "#/components/schemas/Vendor"
 
-  /api/dashboard/monthly/{vendor_id}:
+  /dashboard/monthly/{vendor_id}:
     get:
       summary: Get monthly sales for a vendor
       parameters:
@@ -92,7 +92,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /api/dashboard/monthly/{vendor_id}/{product_id}:
+  /dashboard/monthly/{vendor_id}/{product_id}:
     get:
       summary: Get monthly sales for a specific product of a vendor
       parameters:
@@ -137,7 +137,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /api/dashboard/product/{vendor_id}:
+  /dashboard/product/{vendor_id}:
     get:
       summary: Get all sales grouped by product for a vendor
       parameters:

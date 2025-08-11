@@ -73,7 +73,7 @@ function App() {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/api/vendor`);
+        const response = await axios.get(`${backendUrl}/vendor`);
         if (response.data.type === 'success') {
           setVendors(response.data.data);
         }
@@ -91,7 +91,7 @@ function App() {
     
     setIsTableLoading(true);
     try {
-      const response = await axios.get(`${backendUrl}/api/dashboard/product/${selectedVendor.value}`, {
+      const response = await axios.get(`${backendUrl}/dashboard/product/${selectedVendor.value}`, {
         params: {
           page: pageIndex + 1,
           limit: pageSize,
@@ -135,7 +135,7 @@ function App() {
 
       setIsChartLoading(true);
       try {
-        const response = await axios.get(`${backendUrl}/api/dashboard/monthly/${selectedVendor.value}`);
+        const response = await axios.get(`${backendUrl}/dashboard/monthly/${selectedVendor.value}`);
 
         if (response.data.type === 'success') {
           const sales = response.data.data;
@@ -205,7 +205,7 @@ function App() {
       setIsProductChartLoading(true);
       try {
         const response = await axios.get(
-          `${backendUrl}/api/dashboard/monthly/${selectedVendor.value}/${selectedProduct._id}`
+            `${backendUrl}/dashboard/monthly/${selectedVendor.value}/${selectedProduct._id}`
         );
 
         if (response.data.type === 'success') {
