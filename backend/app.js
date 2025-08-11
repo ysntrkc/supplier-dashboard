@@ -39,9 +39,9 @@ app.response.send = function sendOverride(body) {
 
 app.use(LogHelper.logWithMorgan());
 
-app.use('/api', Routes);
+app.use('/', Routes);
 
-app.get('/api/health', async (_req, res) => {
+app.get('/health', async (_req, res) => {
 	return res.json({type: 'success', message: 'Server is running'});
 });
 

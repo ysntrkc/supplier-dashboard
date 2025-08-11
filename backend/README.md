@@ -65,11 +65,11 @@ After importing the data, you'll be able to:
 
 ## API Routes
 
-- `GET /api/health` - Health check endpoint
-- `GET /api/vendor` - Get all vendors
-- `GET /api/dashboard/monthly/:vendor_id` - Get monthly sales for a vendor
-- `GET /api/dashboard/monthly/:vendor_id/:product_id` - Get monthly sales for a specific product
-- `GET /api/dashboard/product/:vendor_id` - Get product-wise sales for a vendor
+- `GET /health` - Health check endpoint
+- `GET /vendor` - Get all vendors
+- `GET /dashboard/monthly/:vendor_id` - Get monthly sales for a vendor
+- `GET /dashboard/monthly/:vendor_id/:product_id` - Get monthly sales for a specific product
+- `GET /dashboard/product/:vendor_id` - Get product-wise sales for a vendor
 
 ### Query Parameters for Product Sales
 
