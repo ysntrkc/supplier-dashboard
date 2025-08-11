@@ -83,7 +83,7 @@ The `/api/dashboard/product/:vendor_id` endpoint supports the following query pa
 
 Example request:
 ```
-GET /api/dashboard/product/{vendor_id}?page=1&limit=10&sort_by=total&sort_order=desc&search=blue
+GET /dashboard/product/{vendor_id}?page=1&limit=10&sort_by=total&sort_order=desc&search=blue
 ```
 
 ### Request And Response Examples
